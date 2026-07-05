@@ -1,4 +1,4 @@
-# Скачивает ffmpeg (сборка gyan.dev, essentials) в папку bin/ рядом со скриптом.
+# Downloads ffmpeg (gyan.dev essentials build) into bin/ next to this script.
 $ErrorActionPreference = "Stop"
 $bin = Join-Path $PSScriptRoot "bin"
 New-Item -ItemType Directory -Force $bin | Out-Null
@@ -6,10 +6,10 @@ New-Item -ItemType Directory -Force $bin | Out-Null
 $zip = Join-Path $bin "ffmpeg.zip"
 $tmp = Join-Path $bin "tmp"
 
-Write-Host "Скачиваю ffmpeg (~100 МБ)..."
+Write-Host "Downloading ffmpeg (~100 MB)..."
 Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile $zip -UseBasicParsing
 
-Write-Host "Распаковываю..."
+Write-Host "Extracting..."
 Expand-Archive $zip -DestinationPath $tmp -Force
 foreach ($name in "ffmpeg.exe", "ffprobe.exe") {
     $exe = Get-ChildItem $tmp -Recurse -Filter $name | Select-Object -First 1
@@ -17,4 +17,4 @@ foreach ($name in "ffmpeg.exe", "ffprobe.exe") {
 }
 Remove-Item $tmp -Recurse -Force
 Remove-Item $zip -Force
-Write-Host "Готово: bin\ffmpeg.exe, bin\ffprobe.exe"
+Write-Host "Done: bin\ffmpeg.exe, bin\ffprobe.exe"
