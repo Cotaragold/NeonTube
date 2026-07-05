@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""NeonTube — локальный GUI для скачивания видео с YouTube (yt-dlp + Flask)."""
+"""NeonTube — local GUI for downloading YouTube videos (yt-dlp + Flask)."""
 import json
 import os
 import subprocess
@@ -43,11 +43,11 @@ def _apply_proxy(opts):
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
-# ---------------------------------------------------------------- очередь ---
+# ------------------------------------------------------------------ queue ---
 
 jobs = {}          # id -> job dict
 jobs_lock = threading.Lock()
-job_queue = []     # id-шники в порядке добавления
+job_queue = []     # job ids in insertion order
 queue_cv = threading.Condition(jobs_lock)
 
 
@@ -60,7 +60,7 @@ def _public_job(job):
 
 def _build_cmd(job):
     mode = job["mode"]
-    q = job["quality"]  # число (высота) или "best"
+    q = job["quality"]  # integer height or "best"
     hsel = "" if q == "best" else f"[height<={q}]"
 
     cmd = [
@@ -74,16 +74,16 @@ def _build_cmd(job):
         ("download:PROG|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|"
          "%(progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s"),
         "--print", "after_move:DEST|%(filepath)s",
-        "--no-simulate",  # --print сам по себе включает режим симуляции
+        "--no-simulate",  # --print alone implies simulate mode
     ]
 
     proxy = (config.get("proxy") or "").strip()
     if proxy:
         cmd += ["--proxy", proxy]
 
-    # Приоритет H.264 (avc1) + AAC (m4a): AV1/Opus в mp4 многие плееры
-    # не воспроизводят («нет звука»). Фоллбеки — если нужной высоты в
-    # совместимых кодеках нет (напр. 4K бывает только в VP9/AV1).
+    # Prefer H.264 (avc1) + AAC (m4a): many players can't handle AV1/Opus
+    # inside mp4 ("no sound"). Fallbacks cover heights that only exist in
+    # VP9/AV1 (e.g. 4K).
     if mode == "audio":
         cmd += ["-f", "bestaudio/best", "-x",
                 "--audio-format", "mp3", "--audio-quality", "192K"]
@@ -95,7 +95,7 @@ def _build_cmd(job):
                        f"bestvideo{hsel}+bestaudio[ext=m4a]/"
                        f"bestvideo{hsel}+bestaudio/best{hsel}/best"),
                 "--merge-output-format", "mp4",
-                # если аудио всё же не AAC — перекодировать только звук
+                # if audio still isn't AAC — re-encode audio only
                 "--postprocessor-args", "Merger:-c:v copy -c:a aac -b:a 192k"]
 
     cmd.append(job["url"])
@@ -103,7 +103,7 @@ def _build_cmd(job):
 
 
 def _kill_tree(proc):
-    """Убивает yt-dlp вместе с дочерним ffmpeg."""
+    """Kills yt-dlp together with its ffmpeg child."""
     subprocess.run(
         ["taskkill", "/PID", str(proc.pid), "/T", "/F"],
         capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -145,7 +145,7 @@ def _run_job(job):
                 if total:
                     pct = round(done * 100.0 / total, 1)
                     job["progress"] = pct
-                    # 100% сегмента, но файл ещё склеивается/конвертируется
+                    # segment at 100%, but file is still being merged/converted
                     job["status"] = "processing" if pct >= 100 else "downloading"
                 job["speed"] = speed
                 job["eta"] = eta
@@ -170,7 +170,7 @@ def _run_job(job):
         else:
             job["status"] = "error"
             job["error"] = " · ".join(stderr_tail)[-300:] or \
-                f"yt-dlp завершился с кодом {proc.returncode}"
+                f"yt-dlp exited with code {proc.returncode}"
 
 
 def worker():
@@ -188,7 +188,7 @@ def worker():
 
         try:
             _run_job(job)
-        except Exception as e:  # noqa: BLE001 — показываем причину в UI
+        except Exception as e:  # noqa: BLE001 — surface the cause in the UI
             with jobs_lock:
                 job["_proc"] = None
                 job["status"] = "error"
@@ -209,7 +209,7 @@ def index():
 def api_info():
     url = (request.json or {}).get("url", "").strip()
     if not url:
-        return jsonify({"error": "Пустая ссылка"}), 400
+        return jsonify({"error": "Empty URL"}), 400
     try:
         opts = _apply_proxy({"quiet": True, "no_warnings": True,
                              "noplaylist": True, "skip_download": True,
@@ -220,7 +220,7 @@ def api_info():
         with yt_dlp.YoutubeDL(opts) as ydl:
             info = ydl.extract_info(url, download=False)
     except Exception as e:  # noqa: BLE001
-        return jsonify({"error": f"Не удалось получить информацию: {e}"}), 422
+        return jsonify({"error": f"Failed to fetch video info: {e}"}), 422
 
     heights = sorted({
         f["height"] for f in info.get("formats", [])
@@ -245,14 +245,14 @@ def api_download():
     mode = data.get("mode", "full")
     quality = data.get("quality", "best")
     if not url:
-        return jsonify({"error": "Пустая ссылка"}), 400
+        return jsonify({"error": "Empty URL"}), 400
     if mode not in ("full", "video", "audio"):
-        return jsonify({"error": "Неверный режим"}), 400
+        return jsonify({"error": "Invalid mode"}), 400
     if quality != "best":
         try:
             quality = int(quality)
         except (TypeError, ValueError):
-            return jsonify({"error": "Неверное качество"}), 400
+            return jsonify({"error": "Invalid quality"}), 400
 
     job = {
         "id": uuid.uuid4().hex[:12],
@@ -290,7 +290,7 @@ def api_cancel(job_id):
     with jobs_lock:
         job = jobs.get(job_id)
         if not job:
-            return jsonify({"error": "Нет такой задачи"}), 404
+            return jsonify({"error": "No such job"}), 404
         if job["status"] in ("queued", "downloading", "processing"):
             job["cancelled"] = True
             if job["status"] == "queued":

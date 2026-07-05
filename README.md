@@ -1,42 +1,44 @@
 # NeonTube
 
-Локальный GUI для скачивания видео с YouTube. Неоновый интерфейс, очередь загрузок с прогрессом, превью видео, выбор качества и режима: видео+звук / только видео / только звук (mp3).
+**English** | [Русский](README.ru.md)
 
-Под капотом: Flask + [yt-dlp](https://github.com/yt-dlp/yt-dlp) + ffmpeg. Каждая загрузка — отдельный процесс, отмена мгновенная. Форматы подбираются с приоритетом H.264 + AAC, чтобы файлы играли в любом плеере.
+Local GUI for downloading YouTube videos. Neon interface, download queue with progress, video preview, quality selection and three modes: video+audio / video only / audio only (mp3). UI in English and Russian (switchable).
 
-## Установка
+Under the hood: Flask + [yt-dlp](https://github.com/yt-dlp/yt-dlp) + ffmpeg. Each download runs as a separate process, so cancellation is instant. Format selection prefers H.264 + AAC so files play in any player.
+
+## Installation
 
 ```powershell
 git clone https://github.com/Cotaragold/NeonTube.git
 cd NeonTube
 pip install -r requirements.txt
-powershell -ExecutionPolicy Bypass -File get-ffmpeg.ps1   # скачает ffmpeg в bin/
+powershell -ExecutionPolicy Bypass -File get-ffmpeg.ps1   # downloads ffmpeg into bin/
 ```
 
-Нужен Python 3.10+ и Node.js (yt-dlp использует его как JS-runtime для YouTube).
+Requires Python 3.10+ and Node.js (yt-dlp uses it as a JS runtime for YouTube).
 
-## Запуск
+## Running
 
-Двойной клик по `start.bat` — откроется браузер на `http://127.0.0.1:8765`.
+Double-click `start.bat` — a browser opens at `http://127.0.0.1:8765`.
 
-Или вручную: `python app.py`
+Or manually: `python app.py`
 
-## Использование
+## Usage
 
-1. Вставь ссылку → **АНАЛИЗ** — появится превью с обложкой и списком качеств.
-2. Выбери режим (видео+звук / только видео / только звук) и качество.
-3. **СКАЧАТЬ** — задача уходит в очередь; виден прогресс, скорость, ETA. Готовый файл открывается прямо из карточки.
+1. Paste a link → **ANALYZE** — a preview appears with the thumbnail and available qualities.
+2. Pick a mode (video+audio / video only / audio only) and quality.
+3. **DOWNLOAD** — the job goes into the queue; you see progress, speed and ETA. Open the finished file right from its card.
 
-Файлы сохраняются в `downloads/`.
+Files are saved to `downloads/`.
 
-## Если YouTube заблокирован провайдером
+## If YouTube is blocked by your ISP
 
-Приложение ходит в сеть напрямую, минуя браузерные VPN-расширения. Варианты:
+The app connects directly, bypassing browser VPN extensions. Options:
 
-- включить VPN-клиент, который заворачивает весь трафик системы (режим TUN);
-- или в интерфейсе открыть «⚙ настройки сети» и вписать локальный прокси VPN-клиента,
-  например `socks5://127.0.0.1:1080`. Настройка сохраняется в `config.json`.
+- run a VPN client that tunnels all system traffic (TUN mode);
+- or open "⚙ network settings" in the UI and enter your VPN client's local proxy,
+  e.g. `socks5://127.0.0.1:1080`. The setting is stored in `config.json`.
 
-## Дисклеймер
+## Disclaimer
 
-Инструмент для личного использования. Скачивай только контент, на который у тебя есть права, и уважай условия использования YouTube.
+A tool for personal use. Only download content you have the rights to, and respect YouTube's Terms of Service.

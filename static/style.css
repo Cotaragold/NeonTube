@@ -29,14 +29,33 @@ body {
   padding-bottom: 60px;
 }
 
-/* сканлайны поверх всего, чисто декор */
+/* scanlines overlay, purely decorative */
 .scanlines {
   position: fixed; inset: 0; pointer-events: none; z-index: 999;
   background: repeating-linear-gradient(
     to bottom, transparent 0 2px, rgba(0, 0, 0, .12) 2px 4px);
 }
 
-header { text-align: center; padding: 36px 16px 10px; }
+header { text-align: center; padding: 36px 16px 10px; position: relative; }
+
+.lang-toggle {
+  position: absolute; top: 14px; right: 18px;
+  display: flex; gap: 0;
+  border: 1px solid #26264a; border-radius: 8px; overflow: hidden;
+}
+.lang-toggle button {
+  background: #090914; color: var(--text-dim);
+  border: none; cursor: pointer;
+  font-family: var(--font-head); font-size: 11px; font-weight: 700;
+  letter-spacing: .1em; padding: 7px 12px;
+  transition: all .15s;
+}
+.lang-toggle button:hover { color: var(--text); }
+.lang-toggle button.active {
+  color: var(--cyan);
+  background: rgba(0, 240, 255, .1);
+  text-shadow: 0 0 8px rgba(0, 240, 255, .6);
+}
 
 .logo {
   font-family: var(--font-head);
@@ -80,7 +99,7 @@ main { max-width: 880px; margin: 24px auto 0; padding: 0 16px; display: grid; ga
 
 .hidden { display: none !important; }
 
-/* ------------------------------------------------------------- ссылка --- */
+/* ---------------------------------------------------------------- url --- */
 .url-row { display: flex; gap: 12px; }
 
 #url-input {
@@ -154,7 +173,7 @@ main { max-width: 880px; margin: 24px auto 0; padding: 0 16px; display: grid; ga
 .proxy-hint { color: #55557a; font-size: 13px; margin-top: 8px; }
 .proxy-hint code { color: var(--text-dim); }
 
-/* ------------------------------------------------------------- превью --- */
+/* ------------------------------------------------------------ preview --- */
 .preview-panel { border-color: rgba(0, 240, 255, .25); }
 
 .preview-grid { display: grid; grid-template-columns: 320px 1fr; gap: 22px; }
@@ -209,7 +228,7 @@ main { max-width: 880px; margin: 24px auto 0; padding: 0 16px; display: grid; ga
 }
 #quality-select:focus { border-color: var(--violet); box-shadow: 0 0 12px rgba(157, 77, 255, .35); }
 
-/* ------------------------------------------------------------ очередь --- */
+/* -------------------------------------------------------------- queue --- */
 .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .queue-header h3 {
   font-family: var(--font-head); font-size: 15px;

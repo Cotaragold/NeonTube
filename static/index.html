@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,37 +12,41 @@
 <div class="scanlines"></div>
 
 <header>
+  <div class="lang-toggle" id="lang-toggle">
+    <button data-lang="en" class="active">EN</button>
+    <button data-lang="ru">RU</button>
+  </div>
   <h1 class="logo">NEON<span>TUBE</span></h1>
   <p class="tagline">// youtube downloader v1.0</p>
 </header>
 
 <main>
-  <!-- ССЫЛКА -->
+  <!-- URL -->
   <section class="panel url-panel">
     <div class="url-row">
-      <input id="url-input" type="text" placeholder="Вставь ссылку на YouTube видео…"
-             autocomplete="off" spellcheck="false">
-      <button id="analyze-btn" class="btn btn-cyan">АНАЛИЗ</button>
+      <input id="url-input" type="text" data-i18n-ph="urlPlaceholder"
+             placeholder="Paste a YouTube video link…" autocomplete="off" spellcheck="false">
+      <button id="analyze-btn" class="btn btn-cyan" data-i18n="analyze">ANALYZE</button>
     </div>
     <div id="url-error" class="error-msg hidden"></div>
     <details class="proxy-details">
-      <summary>⚙ настройки сети (прокси)</summary>
+      <summary data-i18n="netSettings">⚙ network settings (proxy)</summary>
       <div class="proxy-row">
-        <input id="proxy-input" type="text"
-               placeholder="socks5://127.0.0.1:1080 или http://127.0.0.1:8080 — пусто = напрямую"
+        <input id="proxy-input" type="text" data-i18n-ph="proxyPlaceholder"
+               placeholder="socks5://127.0.0.1:1080 or http://127.0.0.1:8080 — empty = direct"
                autocomplete="off" spellcheck="false">
         <button id="proxy-save" class="btn btn-cyan">OK</button>
       </div>
-      <p class="proxy-hint">Если YouTube заблокирован провайдером — укажи прокси своего VPN.
-        Сохраняется в <code>config.json</code>.</p>
+      <p class="proxy-hint" data-i18n-html="proxyHint">If YouTube is blocked by your ISP,
+        point this at your VPN client's local proxy. Saved to <code>config.json</code>.</p>
     </details>
   </section>
 
-  <!-- ПРЕВЬЮ -->
+  <!-- PREVIEW -->
   <section id="preview" class="panel preview-panel hidden">
     <div class="preview-grid">
       <div class="thumb-wrap">
-        <img id="thumb" alt="превью">
+        <img id="thumb" alt="preview">
         <span id="duration" class="duration-badge"></span>
       </div>
       <div class="meta">
@@ -52,37 +56,37 @@
 
         <div class="controls">
           <div class="control-group">
-            <label>РЕЖИМ</label>
+            <label data-i18n="modeLabel">MODE</label>
             <div class="mode-btns" id="mode-btns">
-              <button class="mode-btn active" data-mode="full">🎬 Видео + звук</button>
-              <button class="mode-btn" data-mode="video">📹 Только видео</button>
-              <button class="mode-btn" data-mode="audio">🎵 Только звук</button>
+              <button class="mode-btn active" data-mode="full" data-i18n="modeFull">🎬 Video + audio</button>
+              <button class="mode-btn" data-mode="video" data-i18n="modeVideo">📹 Video only</button>
+              <button class="mode-btn" data-mode="audio" data-i18n="modeAudio">🎵 Audio only</button>
             </div>
           </div>
           <div class="control-group" id="quality-group">
-            <label>КАЧЕСТВО</label>
+            <label data-i18n="qualityLabel">QUALITY</label>
             <select id="quality-select"></select>
           </div>
         </div>
 
-        <button id="download-btn" class="btn btn-magenta big">⬇ СКАЧАТЬ</button>
+        <button id="download-btn" class="btn btn-magenta big" data-i18n="download">⬇ DOWNLOAD</button>
       </div>
     </div>
   </section>
 
-  <!-- ОЧЕРЕДЬ -->
+  <!-- QUEUE -->
   <section class="panel queue-panel">
     <div class="queue-header">
-      <h3>ОЧЕРЕДЬ ЗАГРУЗОК</h3>
-      <button id="clear-btn" class="btn btn-ghost">очистить завершённые</button>
+      <h3 data-i18n="queueTitle">DOWNLOAD QUEUE</h3>
+      <button id="clear-btn" class="btn btn-ghost" data-i18n="clearDone">clear finished</button>
     </div>
     <div id="queue-list">
-      <p id="queue-empty" class="queue-empty">— пусто —</p>
+      <p id="queue-empty" class="queue-empty" data-i18n="empty">— empty —</p>
     </div>
   </section>
 </main>
 
-<footer>файлы сохраняются в папку <code>downloads/</code> рядом с приложением</footer>
+<footer data-i18n-html="footer">files are saved to the <code>downloads/</code> folder next to the app</footer>
 
 <script src="/static/app.js"></script>
 </body>
